@@ -7,9 +7,13 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static kz.idf.solva.utility.ConstantsUtility.ONE;
 import static kz.idf.solva.utility.SqlUtility.*;
 
 @Slf4j
@@ -33,15 +37,20 @@ public class CurrencyRatesClient {
     }
 
     public Double getActualRate(LocalDate date) {
-        CurrencyRateDto actualRate = CurrencyRateDto.builder().build();
-        Stream<CurrencyRateDto> stream = jdbcTemplate.queryForStream(FIND_ALL_CURRENCY_RATES, new BeanPropertyRowMapper<>(CurrencyRateDto.class));
-        Optional<CurrencyRateDto> rate = stream
-                .filter(currencyRateDto -> currencyRateDto.getDatetime().equals(date))
-                .findFirst();
-        if (rate.isPresent()) {
-            actualRate = rate.get();
+        CurrencyRateDto actualRate;
+        Stream<CurrencyRateDto> stream = jdbcTemplate.queryForStream
+                (FIND_ALL_CURRENCY_RATES, new BeanPropertyRowMapper<>(CurrencyRateDto.class));
+        List<CurrencyRateDto> list = stream
+                .filter(rate -> rate.getDatetime().equals(date))
+                .toList();
+        if(list.isEmpty()){
+            return getRate().getPreviousClose();
         }
-        if(!actualRate.getIsMarketOpen() || actualRate.getIsMarketOpen() == null) {
+        actualRate = list.get(list.size() - ONE);
+        if (actualRate == null) {
+            actualRate = getRate();
+        }
+        if (!actualRate.getIsMarketOpen()) {
             return actualRate.getPreviousClose();
         }
         return actualRate.getClose();

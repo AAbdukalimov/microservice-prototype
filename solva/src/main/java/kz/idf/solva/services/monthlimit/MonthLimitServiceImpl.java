@@ -30,14 +30,10 @@ public class MonthLimitServiceImpl implements MonthLimitService {
         return monthLimitRepository.findAll();
     }
 
-    @Override
-    public MonthLimit findActualLimitByCategory(String expenseCategory) {
-        return monthLimitRepository.findActualLimitByCategory(expenseCategory);
-    }
 
     @Override
-    public Double sumTransactionFromLimitPeriod(String expenseCategory) {
-        return monthLimitRepository.sumTransactionFromLimitPeriod(expenseCategory);
+    public Double sumTransactionFromLimitPeriod(String expenseCategory, LocalDate dateTime) {
+        return monthLimitRepository.sumTransactionFromLimitPeriod(expenseCategory, dateTime);
     }
 
     @Override

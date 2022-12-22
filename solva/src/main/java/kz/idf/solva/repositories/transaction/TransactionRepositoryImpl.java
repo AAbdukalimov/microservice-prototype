@@ -1,19 +1,12 @@
 package kz.idf.solva.repositories.transaction;
 
 import kz.idf.solva.dto.TransactionDto;
-import kz.idf.solva.entities.MonthLimit;
 import kz.idf.solva.entities.Transaction;
 import lombok.AllArgsConstructor;
-
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import java.util.List;
 import java.util.stream.Stream;
 import static kz.idf.solva.utility.SqlUtility.*;

@@ -34,37 +34,30 @@ public class MonthLimitRepositoryImpl implements MonthLimitRepository {
 
     @Override
     public List<MonthLimit> findAll() {
-        Stream<MonthLimit> stream = jdbcTemplate.queryForStream(FIND_ALL_MONTH_LIMITS, new BeanPropertyRowMapper<>(MonthLimit.class));
+        Stream<MonthLimit> stream = jdbcTemplate.queryForStream
+                (FIND_ALL_MONTH_LIMITS, new BeanPropertyRowMapper<>(MonthLimit.class));
         return stream.toList();
     }
 
     @Override
-    public MonthLimit findActualLimitByCategory(String expenseCategory) {
-        MonthLimit limit;
-        List<MonthLimit> limits = findAll().stream()
-                .filter(monthLimit -> monthLimit.getExpenseCategory().equals(expenseCategory))
+    public MonthLimit findActualLimit(String expenseCategory, LocalDate dateTime) {
+        MonthLimit monthLimit;
+        Stream<MonthLimit> stream = jdbcTemplate.queryForStream(
+                "SELECT * FROM solva.month_limit WHERE ? BETWEEN starting_date AND ending_date;",
+                new BeanPropertyRowMapper<>(MonthLimit.class),
+                dateTime);
+        List<MonthLimit> limits = stream
+                .filter(limit -> limit.getExpenseCategory().equals(expenseCategory))
                 .toList();
         if (checkLimitTable(expenseCategory)) {
-            limit = createDefaultLimit(expenseCategory);
-        }
-         else limit = limits.get(limits.size() - ONE);
-        return limit;
+            monthLimit = createDefaultLimit(expenseCategory);
+        } else monthLimit = limits.get(limits.size() - ONE);
+        return monthLimit;
     }
 
     @Override
-    public MonthLimit createDefaultLimit(String expenseCategory) {
-        return create(MonthLimit.builder()
-                .startingDate(LocalDate.now())
-                .endingDate(LocalDate.now().plusMonths(1L))
-                .expenseCategory(expenseCategory)
-                .currency(USD)
-                .sumLimit(DEFAULT_MONTH_LIMIT)
-                .build());
-    }
-
-    @Override
-    public Double sumTransactionFromLimitPeriod(String expenseCategory) {
-        MonthLimit limit = findActualLimitByCategory(expenseCategory);
+    public Double sumTransactionFromLimitPeriod(String expenseCategory, LocalDate dateTime) {
+        MonthLimit limit = findActualLimit(expenseCategory, dateTime);
         Stream<Transaction> stream = jdbcTemplate.queryForStream(
                 "SELECT * FROM solva.transaction WHERE date_time BETWEEN ? AND ?;",
                 new BeanPropertyRowMapper<>(Transaction.class),
@@ -78,15 +71,14 @@ public class MonthLimitRepositoryImpl implements MonthLimitRepository {
     }
 
     @Override
-    public MonthLimit findLimitByDate(LocalDate transactionDate) {
-        MonthLimit monthLimit;
-        Stream<MonthLimit>stream = jdbcTemplate.queryForStream(
-                "SELECT * FROM solva.month_limit WHERE ? BETWEEN starting_date AND  ending_date;",
-                new BeanPropertyRowMapper<>(MonthLimit.class),
-                transactionDate);
-         List<MonthLimit> limits = stream.toList();
-         monthLimit = limits.get(limits.size() - ONE);
-        return monthLimit;
+    public MonthLimit createDefaultLimit(String expenseCategory) {
+        return create(MonthLimit.builder()
+                .startingDate(LocalDate.now())
+                .endingDate(LocalDate.now().plusMonths(1L))
+                .expenseCategory(expenseCategory)
+                .currency(USD)
+                .sumLimit(DEFAULT_MONTH_LIMIT)
+                .build());
     }
 
     @Override

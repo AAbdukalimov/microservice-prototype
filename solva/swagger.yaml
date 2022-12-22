@@ -104,8 +104,13 @@ components:
       type: object
       properties:
         datetime:
-          type: string
-          example: '21-12-2022'
+        type: string
+          description: Transaction date
+          example: "2023-01-01"
+          format: date
+          pattern: "YYYY-MM-DD"
+          minLength: 0
+          maxLength: 10
         accountFrom:
           type: integer
           example: 1234567890
@@ -137,10 +142,20 @@ components:
       properties:
         startingDate:
           type: string
-          example: '21-12-2022'
+          description: Start date
+          example: "2023-01-01"
+          format: date
+          pattern: "YYYY-MM-DD"
+          minLength: 0
+          maxLength: 10
         endingDate:
           type: string
-          example: '21-12-2022'
+          description: End date
+          example: "2023-01-01"
+          format: date
+          pattern: "YYYY-MM-DD"
+          minLength: 0
+          maxLength: 10
         expenseCategory:
           type: string
           example: 'SERVICE'
@@ -155,7 +170,12 @@ components:
       properties:
         startingDate:
           type: string
-          example: '21-12-2022'
+          description: Start date
+          example: "2023-01-01"
+          format: date
+          pattern: "YYYY-MM-DD"
+          minLength: 0
+          maxLength: 10
         sumLimit:
           type: number
           example: 2005.2
