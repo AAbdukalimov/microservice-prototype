@@ -4,7 +4,7 @@ MySQL, FlyWay,Spring Boot 2.7.6, Lombok, Swagger 3.0, частично Spring Da
 Для запуска проекта: 
 
 Импортировать проект на ваш сервер
-Скачать и установить БД, при необходимости, при установке указать данные из файла по ссылке:
+скачать и установить БД, при необходимости, при установке указать данные из файла по ссылке:
 https://github.com/AAbdukalimov/Microservice-prototype/blob/main/solva/src/main/resources/application.properties
 
 Далее по ссылке ниже открываете файл SolvaApplication нажатием SHIFT+F10 запускаете приложение:
