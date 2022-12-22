@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: 'test task'
+  description: 'Bank micro service prototype'
+  contact:
+    name: Akanay
+    email: akanay7@gmail.com
+servers:
+  - url: "http://localhost:8080"
+paths:
+  /:
+
+# transactions controller
+
+    post:
+      summary: Создаёт транзакцию
+      description: Transaction REST контроллер для приёма транзакций
+      responses:
+        201:
+          description: Created
+      tags:
+        - transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDto'
+
+# client controller
+
+  /client:
+    post:
+      tags:
+        - client
+      summary: Создаёт месячный лимит
+      description: Client service REST контроллер получения списка транзакций, лимитов, транзакций превысивших лимит
+      responses:
+        201:
+         description: Created
+      requestBody:
+           content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/MonthLimitDto'
+
+  /client/allLimits:
+    get:
+      tags:
+        - allLimits
+      description: Get list limits.
+      responses:
+        200:
+          description: Возвращает список всех лимитов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MonthLimit'
+
+ /client/detailingExceedingLimits:
+    get:
+      tags:
+        - detailingExceedingLimits
+      description: Возвращает список список транзакций, превысивших лимит, с указанием лимита, который был превышен (дата установления, сумма лимита, валюта (USD)).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        200:
+          description: OK
+
+ /client/allLimitExceedingTransactions:
+     get:
+       tags:
+        - allLimitExceedingTransactions
+       description: Возвращает список превышенных лимитов
+       requestBody:
+          content:
+            application/json:
+               schema:
+                 $ref: '#/components/schemas/MonthLimit'
+       responses:
+         200:
+           description: OK
+components:
+  schemas:
+    TransactionDto:
+      type: object
+      properties:
+        accountTo:
+          type: integer
+          example: 1234567890
+        sum:
+          type: number
+          example: 100.5
+        expenseCategory:
+          type: string
+          example: 'SERVICE'
+    Transaction:
+      type: object
+      properties:
+        datetime:
+          type: string
+          example: '21-12-2022'
+        accountFrom:
+          type: integer
+          example: 1234567890
+        currencyShortName:
+          type: string
+          example: 'USD'
+        sum:
+          type: number
+        expenseCategory:
+          type: string
+          example: 'SERVICE'
+        transactionSumInUsd:
+          type: number
+          example: 200.5
+        limitExceeded:
+          type: boolean
+          example: true
+    MonthLimitDto:
+      type: object
+      properties:
+        expenseCategory:
+         type: string
+         example: 'SERVICE'
+        sumLimit:
+          type: number
+          example: 2005.2
+    MonthLimit:
+      type: object
+      properties:
+        startingDate:
+          type: string
+          example: '21-12-2022'
+        endingDate:
+          type: string
+          example: '21-12-2022'
+        expenseCategory:
+          type: string
+          example: 'SERVICE'
+        currency:
+          type: string
+          example: 'USD'
+        sumLimit:
+          type: number
+          example: 2005.2
+    LimitExceededDto:
+      type: object
+      properties:
+        startingDate:
+          type: string
+          example: '21-12-2022'
+        sumLimit:
+          type: number
+          example: 2005.2
+        currency:
+          type: string
+          example: 'USD'
+
+
+
+
+
+
+
+
+
+
